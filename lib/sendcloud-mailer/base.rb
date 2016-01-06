@@ -1,3 +1,6 @@
+require 'tempfile'
+require 'rest-client'
+
 module SendcloudMailer
   class Base
     attr_accessor :settings
@@ -14,14 +17,27 @@ module SendcloudMailer
         :apiKey => settings[:api_key],
         :from => from,
         :to => to,
+        :cc => cc,
+        :bcc => bcc,
         :subject => mail.subject,
         :html => html,
-        :plain => plain
+        :plain => plain,
+        :attachments => attachments
       }
+      params.delete_if { |k, v| v.nil? }
 
-      result = Net::HTTP.post_form(URI.parse("http://api.sendcloud.net/apiv2/mail/send"), params)
-      json = JSON.parse(result.body.force_encoding('UTF-8'))
-      ActionMailer::Base.logger.error(json) unless json["result"] && !ActionMailer::Base.logger.nil?
+      result = RestClient.post( 'http://api.sendcloud.net/apiv2/mail/send', params )
+      json = JSON.parse(result.force_encoding('UTF-8'))
+      error(json) unless json["result"]
+      unless @file.nil?
+        File.unlink(@file.path) rescue nil
+      end
+    end
+
+    private
+
+    def error(message)
+      ActionMailer::Base.logger.error(message) unless ActionMailer::Base.logger.nil?
     end
 
     def from
@@ -29,8 +45,23 @@ module SendcloudMailer
     end
 
     def to
-      addresses = @mail.header.fields.find{|f| f.name == "To"}.address_list.addresses
-      addresses.join(';')
+      addresses 'To'
+    end
+
+    def cc
+      addresses 'Cc'
+    end
+
+    def bcc
+      addresses 'Bcc'
+    end
+
+    def addresses(name)
+      result = @mail.header.fields.find { |f| f.name == name }
+      unless result.nil?
+        addresses = result.address_list.addresses
+        addresses.join(';')
+      end
     end
 
     def html
@@ -39,6 +70,18 @@ module SendcloudMailer
 
     def plain
       @mail.multipart? ? (@mail.text_part ? @mail.text_part.body.decoded : nil) : @mail.body.decoded
+    end
+
+    def attachments
+      return nil if @mail.attachments.length == 0
+
+      @mail.attachments.each do | attachment |
+        filename = attachment.filename
+        # sendcloud api can only single file
+        @file = File.new(File.join(Dir.tmpdir, filename), 'w+b')
+        @file.write(attachment.body.decoded)
+        return @file
+      end
     end
   end
 end

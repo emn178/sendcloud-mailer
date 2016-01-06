@@ -6,11 +6,11 @@ require 'sendcloud-mailer/version'
 Gem::Specification.new do |spec|
   spec.name          = "sendcloud-mailer"
   spec.version       = SendcloudMailer::VERSION
-  spec.authors       = ["Chen Yi-Cyuan"]
+  spec.authors       = ["Chen, Yi-Cyuan"]
   spec.email         = ["emn178@gmail.com"]
 
-  spec.summary       = %q{Sendcloud mailer.}
-  spec.description   = %q{Sendcloud mailer.}
+  spec.summary       = %q{An Action Mailer delivery method for SendCloud email service.}
+  spec.description   = %q{An Action Mailer delivery method for SendCloud email service.}
   spec.homepage      = "https://github.com/emn178/sendcloud-mailer"
   spec.license       = "MIT"
 
@@ -18,12 +18,12 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "actionmailer"
+  spec.add_dependency "rest-client"
 
   spec.add_development_dependency "bundler", "~> 1.10"
   spec.add_development_dependency "rake", "~> 10.0"
-  # spec.add_development_dependency "rails"
   spec.add_development_dependency "rspec"
-  spec.add_development_dependency "rspec-its"
+  spec.add_development_dependency "webmock"
   spec.add_development_dependency "simplecov"
   spec.add_development_dependency "coveralls"
 end

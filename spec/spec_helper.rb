@@ -13,14 +13,15 @@ end
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'sendcloud-mailer'
-require 'rspec/its'
+require 'webmock/rspec'
 
-# Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each do |file|
-#   require file
-# end
+Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each do |file|
+  require file
+end
 
 ActionMailer::Base.delivery_method = :sendcloud
 ActionMailer::Base.sendcloud_settings = {
   :api_user => 'USER',
   :api_key => 'KEY'
 }
+ActionMailer::Base.logger = Logger.new(nil)
