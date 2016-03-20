@@ -1,4 +1,3 @@
-require 'tempfile'
 require 'rest-client'
 
 module SendcloudMailer
