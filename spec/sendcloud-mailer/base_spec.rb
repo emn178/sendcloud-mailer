@@ -132,7 +132,7 @@ describe SendcloudMailer::Base do
     context "and save successful" do
       let(:with) { 
         Proc.new { |request|
-          request.body =~ /--\d+\r\nContent-Disposition: form-data; name=\"apiUser\"\r\n\r\nUSER\r\n--\d+\r\nContent-Disposition: form-data; name=\"apiKey\"\r\n\r\nKEY\r\n--\d+\r\nContent-Disposition: form-data; name=\"from\"\r\n\r\nemn178@gmail.com\r\n--\d+\r\nContent-Disposition: form-data; name=\"to\"\r\n\r\nuser@example.com\r\n--\d+\r\nContent-Disposition: form-data; name=\"subject\"\r\n\r\nTitle\r\n--\d+\r\nContent-Disposition: form-data; name=\"plain\"\r\n\r\nTest\r\n--\d+\r\nContent-Disposition: form-data; name=\"attachments\"; filename=\"sample.png\"\r\nContent-Type: image\/png\r\n\r\n\r\n--\d+--\r\n/
+          request.body =~ /------RubyFormBoundary\w+\r\nContent-Disposition: form-data; name=\"apiUser\"\r\n\r\nUSER\r\n------RubyFormBoundary\w+\r\nContent-Disposition: form-data; name=\"apiKey\"\r\n\r\nKEY\r\n------RubyFormBoundary\w+\r\nContent-Disposition: form-data; name=\"from\"\r\n\r\nemn178@gmail.com\r\n------RubyFormBoundary\w+\r\nContent-Disposition: form-data; name=\"to\"\r\n\r\nuser@example.com\r\n------RubyFormBoundary\w+\r\nContent-Disposition: form-data; name=\"subject\"\r\n\r\nTitle\r\n------RubyFormBoundary\w+\r\nContent-Disposition: form-data; name=\"plain\"\r\n\r\nTest\r\n------RubyFormBoundary\w+\r\nContent-Disposition: form-data; name=\"attachments\"; filename=\"sample.png\"\r\nContent-Type: image\/png\r\n\r\n\r\n------RubyFormBoundary\w+--\r\n/
         }
       }
       it { expect(ActionMailer::Base.logger).not_to receive(:error) }
@@ -143,5 +143,29 @@ describe SendcloudMailer::Base do
       before { allow_any_instance_of(File).to receive(:write).and_raise('Mock') }
       it { expect{ mail.deliver_now }.to raise_error('Mock') }
     end
+  end
+
+  context "with label id" do
+    let(:message) {
+      {
+          from: 'emn178@gmail.com',
+          to: 'user@example.com',
+          subject: 'Title',
+          body: 'Test',
+          label_id: '65123'
+      }
+      let(:post) {
+        {
+            "apiKey"=>"KEY",
+            "apiUser"=>"USER",
+            "from"=>"emn178@gmail.com",
+            "plain"=>"Test",
+            "subject"=>"Title",
+            "to"=>"user@example.com",
+            "labelId"=>"65123"
+        }
+      }
+      it { expect(ActionMailer::Base.logger).not_to receive(:error) }
+    }
   end
 end
