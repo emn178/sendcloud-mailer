@@ -21,7 +21,8 @@ module SendcloudMailer
         :subject => mail.subject,
         :html => html,
         :plain => plain,
-        :attachments => attachments
+        :attachments => attachments,
+        :labelId => label_id
       }
       params.delete_if { |k, v| v.nil? }
 
@@ -81,6 +82,10 @@ module SendcloudMailer
         @file.write(attachment.body.decoded)
         return @file
       end
+    end
+
+    def label_id
+      @mail.header.fields.find { |f| f.name == 'label-id' }.try :value
     end
   end
 end
