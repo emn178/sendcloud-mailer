@@ -65,11 +65,19 @@ module SendcloudMailer
     end
 
     def html
-      @mail.html_part ? @mail.html_part.body.decoded : nil
+      if @mail.html_part
+        @mail.html_part.body.decoded
+      else
+        @mail.content_type =~ /text\/html/ ? @mail.body.decoded : nil
+      end
     end
 
     def plain
-      @mail.multipart? ? (@mail.text_part ? @mail.text_part.body.decoded : nil) : @mail.body.decoded
+      if @mail.multipart?
+        @mail.text_part ? @mail.text_part.body.decoded : nil
+      else
+        @mail.content_type =~ /text\/plain/ ? @mail.body.decoded : nil
+      end
     end
 
     def attachments
