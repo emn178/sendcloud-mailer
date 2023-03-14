@@ -27,8 +27,8 @@ Set up delivery method and SendCloud settings in you rails config, eg. `config/e
 ```Ruby
 config.action_mailer.delivery_method = :sendcloud
 config.action_mailer.sendcloud_settings = {
-  :api_user => 'USER',
-  :api_key => 'KEY'
+  api_user: 'USER',
+  api_key: 'KEY'
 }
 ```
 If you use SMTP, you can add this interecptor to fix the problem that SendCloud does not accept <HTML> tag.

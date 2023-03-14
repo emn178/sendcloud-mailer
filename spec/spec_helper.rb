@@ -1,27 +1,27 @@
 require 'simplecov'
-require 'coveralls'
+# require 'coveralls'
 
-SimpleCov.add_filter "/spec/"
-SimpleCov.add_filter "engine.rb"
+SimpleCov.add_filter '/spec/'
+SimpleCov.add_filter 'engine.rb'
 
-if ENV["COVERAGE"]
+if ENV['COVERAGE']
   SimpleCov.start
-elsif ENV["COVERALLS"]
+elsif ENV['COVERALLS']
   SimpleCov.formatter = Coveralls::SimpleCov::Formatter
   Coveralls.wear!
 end
 
-$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 require 'sendcloud-mailer'
 require 'webmock/rspec'
 
-Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each do |file|
+Dir[File.dirname(__FILE__) + '/support/**/*.rb'].each do |file|
   require file
 end
 
 ActionMailer::Base.delivery_method = :sendcloud
 ActionMailer::Base.sendcloud_settings = {
-  :api_user => 'USER',
-  :api_key => 'KEY'
+  api_user: 'USER',
+  api_key: 'KEY'
 }
 ActionMailer::Base.logger = Logger.new(nil)

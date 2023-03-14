@@ -3,6 +3,7 @@ module SendcloudMailer
     def self.delivering_email(mail)
       html = mail.html_part ? mail.html_part.body.decoded : nil
       return if html.nil?
+
       html = Nokogiri::HTML(html)
       body = html.xpath('//body')[0]
       body.name = 'div'
